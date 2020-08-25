@@ -2,9 +2,31 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from markdown2 import Markdown
+from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Div, Field
 from . import util
-from . import forms
 import random
+
+
+class NewEntryForm(forms.Form):
+    title = forms.CharField(label="Title")
+    body = forms.CharField(
+        label="Content",
+        widget=forms.Textarea
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Field('title', placeholder='Enter Title', autocomplete='off'),
+                Field('body', placeholder='Enter Page Content '),
+                Submit('submit', 'Save Entry', css_class='btn btn-primary float-right'), 
+                css_class='form-group col-8 offset-2'
+            )
+        )
 
 markdowner = Markdown()
 entries = util.list_entries()
@@ -57,7 +79,7 @@ def create(request):
         Otherwise, save entry to disk and redirect user to the new entry's page. 
     """
     if request.method == "POST":
-        form = forms.NewEntryForm(request.POST)
+        form = NewEntryForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
             body = form.cleaned_data["body"]
@@ -79,7 +101,7 @@ def create(request):
             })
     else:
         return render(request, "encyclopedia/create.html", {
-            "form": forms.NewEntryForm()
+            "form": NewEntryForm()
         })
 
 def random_page(request):
@@ -98,7 +120,7 @@ def edit(request, title):
         Redirect user to that entry's page. 
     """
     if request.method == "POST":
-        form = forms.NewEntryForm(request.POST)
+        form = NewEntryForm(request.POST)
         if form.is_valid():
             new_title = form.cleaned_data["title"]
             new_body = form.cleaned_data["body"]
@@ -113,5 +135,5 @@ def edit(request, title):
 
         return render(request, 'encyclopedia/edit.html', {
             "title": title,
-            "form": forms.NewEntryForm(data)
+            "form": NewEntryForm(data)
         })
