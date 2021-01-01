@@ -4,6 +4,7 @@ Simple online encyclopedia similar to Wikipedia built with Django.
 ## Table of Contents
 - [Project Summary](#project-summary)
 - [Technologies](#technologies)
+- [Features](#features)
 - [Setup](#setup)
 
 
