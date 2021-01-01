@@ -45,15 +45,17 @@ def entry(request, title):
     Render a page that displays the contents of encyclopedia entry specified in wiki/TITLE.
     If TITLE does not exist in the entry list, render error page.
     """
-    # convert Markdown content to HTML 
-    content = markdowner.convert(str(util.get_entry(title)))
     
-    if util.is_entry(entries, title):
+    if not util.is_entry(entries, title):
+        return render(request, "encyclopedia/error.html" )
+    else: 
+        # convert Markdown content to HTML 
+        content = markdowner.convert(str(util.get_entry(title)))
+
         return render(request, "encyclopedia/entry.html", {
             "content": content,
             "title": title
         })
-    return render(request, "encyclopedia/error.html" )
 
 def search(request):
     """
